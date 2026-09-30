@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#030b0c">
+  <meta name="color-scheme" content="dark">
+  <title>NOC Riacho · Matrix · Teste offline</title>
+  <style>
+/* Wallboard 16:9. Unidade proporcional à tela, inclusive em 3840 × 2160. */
+:root{color-scheme:dark;--green:#52f5b1;--ice:#d1fff0;--cyan:#56e3e6;--amber:#f6c463;--red:#ff777e;--gray:#748a90;--ink:#e9f8f2;--muted:#88a6a2;--bg:#030b0d;--line:#76e3bf26;--u:clamp(13px,.86vw,34px);font:400 var(--u)/1.5 "Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
+*{box-sizing:border-box}html,body{margin:0;min-width:320px}body{background:radial-gradient(ellipse at 50% 48%,#0a302c 0,#061819 28%,#030b0d 69%);overflow-x:hidden}button,a,input,select{font:inherit}button{cursor:pointer;color:inherit;border:0}button,a{-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--green);outline-offset:5px}button:disabled{opacity:.45;cursor:default}svg{width:1.5em;height:1.5em;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}.icon-library{position:absolute;width:0;height:0;overflow:hidden}[hidden]{display:none!important}.command-wall{height:100vh;height:100dvh;min-height:680px;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;padding:1.2rem 2rem .65rem;isolation:isolate;position:relative;overflow:hidden}.command-wall:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,#b8ffeb02 3px 4px)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:1.4rem;border-bottom:1px solid var(--line);padding-bottom:1.05rem}.brand{display:flex;align-items:center;gap:.8rem;text-decoration:none;color:inherit}.brand-emblem{width:2.9rem;height:2.9rem;display:grid;place-items:center;border:1px solid #58f7b85e;background:linear-gradient(145deg,#45efb220,#45efb203);clip-path:polygon(22% 0,100% 0,100% 78%,78% 100%,0 100%,0 22%)}.brand-emblem svg{width:1.9rem;height:1.9rem;color:var(--green);filter:drop-shadow(0 0 .4rem #42efb58a)}.brand strong{font-size:1.22rem;letter-spacing:.17em;font-weight:650}.brand-divider{color:var(--green);font-weight:300}.brand small{display:block;font-size:.59rem;letter-spacing:.16em;color:var(--muted);margin-top:.08rem}.operation{display:flex;align-items:center;gap:.7rem}.operation>i,.core-status i{width:.45rem;height:.45rem;border-radius:50%;background:var(--state-color,var(--green));box-shadow:0 0 .8rem var(--state-color,var(--green))}.operation b{font-size:.69rem;letter-spacing:.14em}.operation small{display:block;color:var(--muted);font-size:.65rem;margin-top:.13rem}.operation[data-state=attention]{--state-color:var(--amber)}.operation[data-state=critical]{--state-color:var(--red)}.header-tools{display:flex;gap:.55rem;align-items:center}.clock{text-align:right;margin-right:1rem}.clock b{font:400 1.45rem/1.2 Consolas,monospace;letter-spacing:.04em;font-variant-numeric:tabular-nums}.clock small{display:block;font-size:.61rem;color:var(--muted);letter-spacing:.04em}.tool{display:inline-flex;justify-content:center;align-items:center;gap:.6rem;width:2.6rem;height:2.6rem;min-width:38px;min-height:38px;border:1px solid var(--line);background:#0d242530;transition:background .2s,border-color .2s,transform .2s}.tool svg{width:1.15rem;height:1.15rem;min-width:17px;min-height:17px}.tool:hover{background:#54f3b715;border-color:#54f3b788;transform:translateY(-2px)}.fullscreen{width:auto;padding:0 .9rem;color:var(--green)}.fullscreen span{font-size:.62rem;letter-spacing:.12em}.tool[aria-pressed=true]{color:var(--amber);border-color:#f6c46366}
+.overview{display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:1.1rem 0 .65rem}.eyebrow{font:400 .59rem/1.4 Consolas,monospace;letter-spacing:.2em;color:var(--green)}h1{font-size:1.45rem;font-weight:400;letter-spacing:-.02em;margin:.08rem 0 .15rem}.source-label{font-size:.65rem;color:var(--amber)}.stats{display:grid;grid-template-columns:repeat(5,1fr);min-width:58%;gap:1.4rem}.stat{text-align:left;position:relative;background:transparent;border-left:1px solid var(--line);padding:.25rem 1.4rem;white-space:nowrap;transition:background .2s}.stat:hover{background:linear-gradient(90deg,#52f5b110,transparent)}.stat small{display:flex;align-items:center;gap:.4rem;color:var(--muted);font:400 .61rem Consolas,monospace;letter-spacing:.12em}.stat b{font:300 2.4rem/1.3 "Segoe UI",sans-serif;letter-spacing:-.05em;margin-right:.6rem;font-variant-numeric:tabular-nums}.stat span{font-size:.59rem;color:var(--muted)}.stat[data-status=online] b{color:var(--green)}.stat[data-status=attention] b{color:var(--amber)}.stat[data-status=offline] b{color:var(--gray)}.alert-stat b{color:var(--red)}.dot{display:inline-block;flex:none;width:.36rem;height:.36rem;border-radius:50%;background:var(--gray)}.dot.online{background:var(--green)}.dot.attention{background:var(--amber)}.dot.critical,.dot.error{background:var(--red)}.dot.offline{background:var(--gray)}
+.scene{position:relative;min-height:0;perspective:1100px;overflow:hidden;border-top:1px solid #78dab811;border-bottom:1px solid #78dab82c;--scene-rx:0deg;--scene-ry:0deg}.scene-grid{position:absolute;inset:-35% -10% -40%;background:linear-gradient(#52f5b10b 1px,transparent 1px),linear-gradient(90deg,#52f5b10b 1px,transparent 1px);background-size:3.3rem 3.3rem;transform:perspective(800px) rotateX(55deg);mask-image:radial-gradient(ellipse,#000 0,transparent 65%);pointer-events:none}.scene-heading,.scene-guide{position:absolute;top:.65rem;z-index:3;color:var(--muted);font:400 .55rem Consolas,monospace;letter-spacing:.13em;display:flex;align-items:center;gap:1.25rem}.scene-heading{left:0}.scene-heading i{display:inline-block;width:.18rem;height:.18rem;background:var(--green);margin:0 .5rem;vertical-align:middle}.scene-guide{right:0}.crosshair{color:var(--green);font-size:1.3rem;line-height:1}.scene canvas{position:absolute;inset:0;display:block;width:100%;height:100%;pointer-events:none}.scene-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:22rem;text-align:center;pointer-events:none}.core{position:relative;width:17.5rem;height:17.5rem;background:radial-gradient(circle,#081e205f 10%,#0b51432f 49%,transparent 67%);border-radius:50%;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:auto;pointer-events:auto;transform:rotateX(var(--scene-rx)) rotateY(var(--scene-ry));transition:filter .3s,background .3s;transform-style:preserve-3d}.core:hover,.core:focus-visible{filter:drop-shadow(0 0 1.2rem #52f5b16b);background:radial-gradient(circle,#102f2f55,transparent 67%)}.core-eyebrow{font:400 .53rem Consolas,monospace;letter-spacing:.28em;color:var(--ice);margin-bottom:.55rem}.core strong{font-weight:250;font-size:4.2rem;line-height:.95;letter-spacing:.12em;text-indent:.12em;text-shadow:0 0 1.2rem #53f7b960}.core strong span{display:block;font-size:1.9rem;line-height:1.4;letter-spacing:.4em;text-indent:.4em;color:var(--green);font-weight:300}.core-status{display:flex;align-items:center;gap:.5rem;color:var(--green);font:400 .54rem Consolas,monospace;letter-spacing:.16em;margin-top:.5rem}.core-status i{width:.25rem;height:.25rem}.core-action{font-size:.47rem;letter-spacing:.12em;color:var(--muted);display:flex;align-items:center;gap:.4rem;margin-top:.9rem}.core-action svg{width:.75rem;height:.75rem}.core-orbit{position:absolute;inset:1%;border:1px solid #50f7c037;border-radius:50%;pointer-events:none}.orbit-a{border-top:2px solid #91ffcf;animation:core-spin 18s linear infinite;box-shadow:inset 0 0 1.5rem #5cffbe0b}.orbit-b{inset:-6%;border-style:dashed;border-color:#51eabb24;animation:core-spin 42s linear infinite reverse}.core-caption{display:flex;align-items:center;justify-content:center;gap:.7rem;font:400 .56rem Consolas,monospace;letter-spacing:.15em;color:var(--green);margin-top:2rem}.caption-line{width:2.7rem;height:1px;background:linear-gradient(90deg,transparent,#5bffb980)}.caption-line:last-child{transform:rotate(180deg)}.core-caption-sub{color:var(--muted);font-size:.57rem;display:block;margin-top:.4rem}
+.service-nodes{position:absolute;inset:0;pointer-events:none;transform-style:preserve-3d}.service-node{position:absolute;width:15.2rem;max-width:24%;left:var(--x);top:var(--y);transform:translate(-50%,-50%);pointer-events:auto;--status:var(--green);--float-y:0px;--float-x:0px;--rx:0deg;--ry:0deg;--depth:0px;z-index:3}.service-node[data-state=attention]{--status:var(--amber)}.service-node[data-state=critical],.service-node[data-state=error]{--status:var(--red)}.service-node[data-state=offline],.service-node[data-state=unknown]{--status:var(--gray)}.node-card{width:100%;position:relative;display:block;padding:1rem 1.15rem;text-align:left;border:1px solid color-mix(in srgb,var(--status) 30%,transparent);background:linear-gradient(128deg,#143637e8,#071518f5 65%);box-shadow:0 .7rem 1.8rem #0007,inset 0 1px #ecfff512;transform:translate3d(var(--float-x),var(--float-y),var(--depth)) rotateX(var(--rx)) rotateY(var(--ry));transform-style:preserve-3d;transition:border-color .24s,box-shadow .24s,background .24s;isolation:isolate}.node-card:before{content:"";position:absolute;inset:-1px;border:1px solid var(--status);clip-path:polygon(0 0,12% 0,12% 1%,1% 1%,1% 25%,0 25%,0 0,100% 100%,88% 100%,88% 99%,99% 99%,99% 75%,100% 75%,100% 100%);pointer-events:none}.node-card:after{content:"";position:absolute;top:100%;left:4%;right:-2%;height:.4rem;transform:skewX(48deg);transform-origin:top;background:linear-gradient(90deg,#154037,#071619);border:1px solid #6dffd920;border-top:0;pointer-events:none}.service-node:hover,.service-node:focus-within{z-index:6}.node-card:hover,.node-card:focus-visible{border-color:var(--status);box-shadow:0 .8rem 3rem #0008,0 0 1.7rem color-mix(in srgb,var(--status) 13%,transparent),inset 0 0 2rem color-mix(in srgb,var(--status) 8%,transparent)}.node-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;transform:translateZ(.8rem)}.node-icon{width:2.1rem;height:2.1rem;display:grid;place-items:center;background:color-mix(in srgb,var(--status) 7%,transparent);border:1px solid color-mix(in srgb,var(--status) 30%,transparent);color:var(--status)}.node-icon svg{width:1.3rem;height:1.3rem}.node-code{font:400 .52rem Consolas,monospace;letter-spacing:.12em;color:var(--muted)}.node-heading{display:flex;justify-content:space-between;align-items:center;gap:.5rem}.node-title{display:block;font-size:.87rem;font-weight:500;letter-spacing:.04em;transform:translateZ(.6rem)}.node-arrow{color:var(--status);width:.85rem;height:.85rem;transition:transform .2s}.node-card:hover .node-arrow{transform:translateX(.25rem)}.node-detail{display:block;color:var(--muted);font-size:.64rem;margin-top:.2rem}.node-status{font:400 .55rem Consolas,monospace;letter-spacing:.09em;color:var(--status);display:flex;gap:.45rem;align-items:center;margin-top:.7rem}.node-status i{width:.27rem;height:.27rem;background:var(--status);border-radius:50%;box-shadow:0 0 .5rem color-mix(in srgb,var(--status) 60%,transparent)}.scene-scale{position:absolute;left:0;top:16%;bottom:16%;display:flex;flex-direction:column;align-items:center;gap:.4rem;color:#67988b66;font:400 .45rem Consolas,monospace;pointer-events:none}.scene-scale i{flex:1;width:3px;background:repeating-linear-gradient(0deg,transparent 0 6px,#89facc44 6px 7px)}.scene-legend{position:absolute;bottom:.55rem;left:50%;transform:translateX(-50%);display:flex;gap:1.3rem;color:var(--muted);font-size:.55rem;white-space:nowrap;z-index:2}.scene-legend span{display:flex;gap:.4rem;align-items:center}
+.telemetry-dock{display:flex;align-items:center;gap:1.5rem;min-height:5rem;padding:.85rem 0}.stream-label{display:flex;gap:.8rem;align-items:center;background:none;text-align:left;flex:none}.stream-label b{font:400 .63rem Consolas,monospace;letter-spacing:.12em}.stream-label small{display:block;color:var(--muted);font-size:.57rem;margin-top:.2rem}.stream-bars{display:flex;align-items:center;gap:3px;height:1.8rem}.stream-bars i{width:2px;background:var(--green);height:30%;animation:stream 2s ease-in-out infinite}.stream-bars i:nth-child(2){animation-delay:-.3s;height:70%}.stream-bars i:nth-child(3){animation-delay:-.8s;height:100%}.stream-bars i:nth-child(4){animation-delay:-1.2s;height:70%}.stream-bars i:nth-child(5){animation-delay:-1.7s}.event-preview{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:1.8rem}.preview-event{display:grid;grid-template-columns:auto 1fr;column-gap:.6rem;align-items:center;border-left:1px solid var(--line);padding-left:1.3rem}.preview-event p{margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.66rem}.preview-event small{grid-column:2;color:var(--muted);font:400 .52rem Consolas,monospace}.dock-action{background:none;color:var(--green);font-size:.56rem;letter-spacing:.1em;display:flex;align-items:center;gap:.6rem;white-space:nowrap;padding:.6rem}.dock-action:hover{color:#fff}.dock-action svg{width:1rem;height:1rem}.wall-foot{display:flex;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);padding-top:.55rem;color:#6c918d;font:400 .49rem Consolas,monospace;letter-spacing:.1em}.foot-slash{color:var(--green);margin:0 .6rem}
+.drawer{position:fixed;margin:0 0 0 auto;inset:0;width:min(36rem,94vw);height:100%;max-height:100%;max-width:100%;border:0;border-left:1px solid #52f5b144;padding:1.5rem 1.8rem 2rem;background:linear-gradient(150deg,#102d2e,#071315 60%);color:var(--ink);overflow:auto;box-shadow:-1rem 0 5rem #0007}.drawer[open]{animation:drawer-in .25s ease-out}.drawer::backdrop{background:#020809b5;backdrop-filter:blur(5px)}.drawer-top{display:flex;align-items:center;justify-content:space-between}.drawer h2{font-size:1.7rem;font-weight:350;letter-spacing:-.02em;margin:.7rem 0 1.3rem}.drawer p{font-size:.88rem;line-height:1.7;color:#b3cac3}.drawer .note{border-left:2px solid var(--green);padding:.75rem 1rem;background:#52f5b107;margin:1rem 0;font-size:.76rem}.drawer .note.warning{border-color:var(--amber);color:var(--amber)}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin:1rem 0}.detail-grid>div{padding:.9rem;background:#0a1d20}.detail-grid dt{font:400 .58rem Consolas,monospace;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}.detail-grid dd{margin:.3rem 0 0;font-size:1rem;overflow-wrap:anywhere}.drawer .filters{display:flex;flex-wrap:wrap;gap:.4rem;margin:1rem 0}.filters button,.action-btn{border:1px solid var(--line);background:#52f5b10b;color:var(--ink);padding:.5rem .7rem;font-size:.72rem}.filters button.active,.filters button:hover,.action-btn:hover{border-color:var(--green);color:var(--green)}.device-row{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:center;text-align:left;background:none;border-bottom:1px solid var(--line);padding:.9rem .4rem}.device-row:hover{background:#52f5b10a}.device-row b{font-size:.85rem;font-weight:500}.device-row small{display:block;color:var(--muted);font-size:.68rem;margin-top:.2rem}.device-row strong{color:var(--ice);font-size:.8rem}.event-row,.alert-row{border:1px solid var(--line);padding:.8rem 1rem;margin:.6rem 0}.event-row p,.alert-row p{margin:0;font-size:.8rem}.event-row small,.alert-row small{color:var(--muted);font-size:.63rem}.level-label{display:flex;gap:.5rem;align-items:center;color:var(--muted);font:400 .58rem Consolas,monospace;margin-bottom:.4rem}.map-surface{height:22rem;width:100%;background:#061315;border:1px solid var(--line)}.empty{color:var(--muted);font-size:.8rem;padding:.8rem 0}.toast{position:fixed;z-index:30;bottom:2rem;left:50%;transform:translateX(-50%);max-width:90vw;background:#132c2f;border:1px solid var(--line);padding:.7rem 1.2rem;font-size:.8rem;box-shadow:0 .3rem 2rem #0008}.motion-paused *,.motion-paused *:before,.motion-paused *:after{animation-play-state:paused!important}.scene-burst .core{filter:drop-shadow(0 0 2rem #52f5b1)}
+@keyframes core-spin{to{transform:rotate(360deg)}}@keyframes stream{50%{transform:scaleY(.35);opacity:.45}}@keyframes drawer-in{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@media(min-width:2400px){.command-wall{padding-top:1.4rem}.node-card{border-width:2px}.core-orbit{border-width:2px}}
+@media(max-aspect-ratio:4/3) and (min-width:901px){.stat span{display:block}.overview{gap:1rem}.stats{min-width:60%;gap:.3rem}.stat{padding-left:.7rem;padding-right:.3rem}.service-node{width:13.5rem;max-width:26%}.core{width:15rem;height:15rem}.scene-center{width:19rem}.scene-guide{display:none}}
+@media(max-width:1200px){.stat span{display:block}.stats{gap:.6rem}.stat{padding-left:.9rem;padding-right:.6rem}.operation{gap:.4rem}.brand small{font-size:.5rem}.fullscreen span{display:none}.fullscreen{width:2.6rem;padding:0}.clock{margin-right:.4rem}.scene-guide{font-size:.48rem}}
+@media(max-width:900px){:root{--u:14px}.command-wall{height:auto;min-height:100dvh;padding:1rem 1.1rem .6rem;grid-template-rows:auto auto auto auto auto}.topbar{flex-wrap:wrap;gap:1rem}.brand{flex:1}.brand strong{font-size:1.05rem}.brand small{font-size:.5rem}.operation{order:3;width:100%;border-top:1px solid var(--line);padding-top:.6rem}.operation small{display:inline;margin-left:.7rem}.clock{display:none}.overview{display:block;padding:1.2rem 0}.section-label{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:.5rem}.section-label .eyebrow{width:100%}.stats{margin-top:1rem;width:100%;gap:0}.stat{padding:.5rem .6rem}.stat:first-child{padding-left:0;border-left:0}.stat small{font-size:.52rem;letter-spacing:.03em}.stat b{font-size:2rem}.stat span{font-size:.53rem;white-space:normal}.scene{overflow:visible;min-height:780px;perspective:none;padding-top:350px}.scene-heading{top:.6rem;left:0;gap:.7rem}.scene-guide,.scene-scale{display:none}.scene-center{top:168px;width:22rem}.core{width:17rem;height:17rem}.core-caption{margin-top:1.2rem}.service-nodes{position:relative;inset:auto;display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:0 .25rem 3rem}.service-node{position:relative;inset:auto!important;transform:none;width:100%;max-width:none}.node-card{padding:.9rem 1rem}.node-head{margin-bottom:.6rem}.node-title{font-size:.8rem}.node-detail{font-size:.64rem}.node-status{font-size:.55rem}.scene-legend{font-size:.48rem;gap:.7rem;bottom:.6rem}.telemetry-dock{flex-wrap:wrap;gap:.7rem;padding:1rem 0}.stream-label{flex:1}.event-preview{order:4;min-width:100%;grid-template-columns:1fr}.preview-event{padding:.6rem 0;border-left:0;border-top:1px solid var(--line)}.preview-event:nth-child(2){display:none}.preview-event p{font-size:.78rem}.wall-foot{flex-wrap:wrap;font-size:.46rem}.wall-foot>span:nth-child(2){display:none}.drawer{width:min(38rem,96vw);padding:1rem 1.3rem}.drawer p{font-size:.95rem}.node-card:after{height:.3rem}}
+@media(max-width:400px){.header-tools{gap:.3rem}.brand-emblem{display:none}.operation small{display:block;margin-left:0}.stat{padding-left:.4rem;padding-right:.2rem}.stat small{font-size:.47rem}.node-card{padding:.8rem}.node-title{font-size:.75rem}.scene-heading>span:last-child{font-size:.47rem}.scene-legend{gap:.4rem;font-size:.43rem}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.node-card,.core{transform:none!important}}
+
+/* Leitura à distância: hierarquia ampliada para painéis de TV. */
+.node-card{background:linear-gradient(125deg,#163b3dea,#07171bef 70%)}
+.scene-grid{opacity:1;background-image:linear-gradient(#52f5b114 1px,transparent 1px),linear-gradient(90deg,#52f5b114 1px,transparent 1px)}
+.core{background:radial-gradient(circle,#0a292b9a 10%,#0c5d422e 49%,transparent 69%)}
+.core:after{content:"";position:absolute;inset:-11%;border-radius:50%;border:1px solid #6dffc632;box-shadow:0 0 3rem #3ee4af0b,inset 0 0 3rem #3ee4af0b;pointer-events:none}
+@media(min-width:901px){
+  .service-node{width:18rem}
+  .node-card{padding:1rem 1.2rem}
+  .node-title{font-size:1.08rem}
+  .node-detail{font-size:.76rem}
+  .node-status{font-size:.65rem}
+  .node-code{font-size:.59rem}
+  .node-icon{width:2.3rem;height:2.3rem}
+  .node-icon svg{width:1.5rem;height:1.5rem}
+  .core{width:20rem;height:20rem}
+  .scene-center{width:26rem}
+  .core strong{font-size:4.7rem}
+  .core strong span{font-size:2.2rem}
+  .core-eyebrow{font-size:.62rem}
+  .core-status,.core-caption{font-size:.67rem}
+  .core-caption-sub{font-size:.65rem}
+  .core-action{font-size:.55rem}
+  .source-label,.operation small{font-size:.73rem}
+  .operation b{font-size:.8rem}
+  .preview-event p{font-size:.78rem}
+  .preview-event small{font-size:.6rem}
+  .scene-legend{font-size:.64rem}
+}
+@media(min-width:901px) and (max-height:800px){.service-node{width:16rem}.node-card{padding:.7rem .95rem}.node-head{margin-bottom:.45rem}.node-title{font-size:.92rem}.node-detail{font-size:.64rem}.node-status{font-size:.56rem;margin-top:.45rem}.node-icon{width:1.7rem;height:1.7rem}.core{width:16rem;height:16rem}.core strong{font-size:3.9rem}.core-caption{margin-top:1.5rem}}
+
+</style>
+</head>
+<body>
+  <!-- ARQUIVO AUTÔNOMO: abra com dois cliques em um navegador atualizado.
+       Não precisa de servidor, internet, instalação ou arquivos auxiliares.
+       Dados simulados para teste. Clique em TELA CHEIA ou pressione F.
+       Para sair da tela cheia, use Esc. Os efeitos podem ser pausados no cabeçalho. -->
+  <noscript><p style="position:fixed;inset:0;z-index:100;background:#030b0d;color:#d1fff0;padding:3rem">Ative o JavaScript do navegador para executar este painel de demonstração.</p></noscript>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-core" viewBox="0 0 24 24"><path d="m12 2 9 5v10l-9 5-9-5V7l9-5ZM3 7l9 5 9-5M12 12v10M7 5l10 6v5"/></symbol>
+    <symbol id="i-android" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 5h4M11 18h2M9 10h6v4H9z"/></symbol>
+    <symbol id="i-api" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5M14 4l-4 16"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></symbol>
+    <symbol id="i-maps" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-logs" viewBox="0 0 24 24"><path d="M8 3H4v18h16V3h-4M9 3h6v4H9zM8 11h8M8 15h8M8 18h4"/></symbol>
+    <symbol id="i-notifications" viewBox="0 0 24 24"><path d="M5 17h14l-2-4V8A5 5 0 0 0 7 8v5l-2 4ZM10 21h4M12 1v2"/></symbol>
+    <symbol id="i-infrastructure" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01M15 6.5h3M15 17.5h3M12 10v4"/></symbol>
+    <symbol id="i-alerts" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3ZM12 9v5M12 17v.1"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="i-motion" viewBox="0 0 24 24"><path d="M8 4v16M16 4v16"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7a9 9 0 1 0 1 8M20 2v6h-6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M5 19 19 5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+  </svg>
+  <main class="command-wall" id="wall">
+    <header class="topbar">
+      <a class="brand" href="#wall" aria-label="NOC Almoxarifado Riacho, início">
+        <span class="brand-emblem"><svg><use href="#i-core"/></svg></span>
+        <span><strong>RIACHO<span class="brand-divider"> / </span>NOC</strong><small>ALMOXARIFADO · CENTRAL DE MONITORAMENTO</small></span>
+      </a>
+      <div class="operation" id="operationState" data-state="attention" role="status">
+        <i></i><div><b id="operationLabel">INICIANDO CENTRAL</b><small id="connectionLabel">Aguardando telemetria</small></div>
+      </div>
+      <div class="header-tools">
+        <div class="clock"><b id="clock">--:--:--</b><small id="date">—</small></div>
+        <button class="tool" id="motionToggle" aria-label="Pausar efeitos visuais" aria-pressed="false" title="Pausar efeitos visuais"><svg><use href="#i-motion"/></svg></button>
+        <button class="tool fullscreen" id="fullscreen" title="Tela cheia · F" aria-label="Ativar tela cheia"><svg><use href="#i-expand"/></svg><span>TELA CHEIA</span></button>
+      </div>
+    </header>
+    <section class="overview" aria-label="Indicadores da operação">
+      <div class="section-label"><span class="eyebrow">VISÃO GLOBAL</span><h1>Operação em campo</h1><span id="sourceLabel" class="source-label">Carregando origem dos dados</span></div>
+      <div class="stats">
+        <button class="stat" data-open="devices" data-status="all"><small>MONITORADOS</small><b id="countTotal">—</b><span>dispositivos</span></button>
+        <button class="stat" data-open="devices" data-status="online"><small><i class="dot online"></i> ONLINE</small><b id="countOnline">—</b><span>em comunicação</span></button>
+        <button class="stat" data-open="devices" data-status="attention"><small><i class="dot attention"></i> ATENÇÃO</small><b id="countAttention">—</b><span>comunicação instável</span></button>
+        <button class="stat" data-open="devices" data-status="offline"><small><i class="dot offline"></i> OFFLINE</small><b id="countOffline">—</b><span>sem comunicação</span></button>
+        <button class="stat alert-stat" data-open="alerts"><small><i class="dot critical"></i> ALERTAS</small><b id="countAlerts">—</b><span>exigem atenção</span></button>
+      </div>
+    </section>
+    <section class="scene" id="scene" aria-label="Rede de monitoramento interativa em 3D">
+      <div class="scene-grid" aria-hidden="true"></div>
+      <div class="scene-heading"><span class="eyebrow">TOPOLOGIA OPERACIONAL</span><span>08 MÓDULOS <i></i> 01 NÚCLEO</span></div>
+      <div class="scene-guide"><span class="crosshair">+</span> INTERAJA COM OS MÓDULOS PARA EXPLORAR</div>
+      <canvas id="sceneCanvas" aria-hidden="true"></canvas>
+      <div class="scene-center" id="sceneCenter">
+        <button class="core" id="core" data-open="core" aria-label="Abrir detalhes do NOC CORE">
+          <span class="core-orbit orbit-a" aria-hidden="true"></span><span class="core-orbit orbit-b" aria-hidden="true"></span>
+          <span class="core-eyebrow">RIACHO NETWORK</span>
+          <strong>NOC<span>CORE</span></strong>
+          <span class="core-status" id="coreStatus"><i></i> INICIALIZANDO</span>
+          <span class="core-action">EXPLORAR NÚCLEO <svg><use href="#i-arrow"/></svg></span>
+        </button>
+        <div class="core-caption"><span class="caption-line"></span><span>INTELIGÊNCIA OPERACIONAL</span><span class="caption-line"></span></div>
+        <span class="core-caption-sub" id="coreCaption">Observabilidade · Conectividade · Campo</span>
+      </div>
+      <div class="service-nodes" id="serviceNodes"></div>
+      <div class="scene-scale" aria-hidden="true"><span>01</span><i></i><span>02</span><i></i><span>03</span><i></i><span>04</span></div>
+      <div class="scene-legend"><span><i class="dot online"></i> Normal</span><span><i class="dot attention"></i> Atenção</span><span><i class="dot critical"></i> Crítico</span><span><i class="dot offline"></i> Offline / indisponível</span></div>
+    </section>
+    <footer class="telemetry-dock">
+      <button class="stream-label" data-open="events"><span class="stream-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span><b>FLUXO DE EVENTOS</b><small id="eventSource">Telemetria operacional</small></span></button>
+      <div class="event-preview" id="eventPreview"></div>
+      <button class="dock-action" data-open="events">VER EVENTOS <svg><use href="#i-arrow"/></svg></button>
+      <button class="tool" id="refresh" title="Atualizar dados" aria-label="Atualizar dados"><svg><use href="#i-refresh"/></svg></button>
+    </footer>
+    <div class="wall-foot"><span>RIACHO FLORESTAL <span class="foot-slash">/</span> NETWORK OPERATIONS CENTER</span><span id="renderLabel">CENÁRIO VETORIAL · ALTA DEFINIÇÃO</span><span id="lastUpdate">—</span></div>
+  </main>
+  <dialog class="drawer" id="drawer" aria-labelledby="drawerTitle">
+    <div class="drawer-top"><span class="eyebrow" id="drawerKicker">CENTRAL NOC</span><button class="tool" id="closeDrawer" aria-label="Fechar detalhes"><svg><use href="#i-close"/></svg></button></div>
+    <h2 id="drawerTitle">Detalhes</h2><div id="drawerContent"></div>
+  </dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script>
+// Configuração exclusiva do teste: não acessa serviços ou dados reais.
+window.NOC_CONFIG = Object.freeze({apiBaseUrl:'',refreshMs:15000,getIdToken:async function(){return '';},googleMapsApiKey:''});
+if(!Object.hasOwn)Object.hasOwn=function(object,key){return Object.prototype.hasOwnProperty.call(object,key);};
+</script>
+  <script>
+/* Projeção 3D local em Canvas + superfícies CSS. Nenhuma biblioteca remota.
+ * A animação representa conexões; partículas não representam volume medido.
+ */
+(() => {
+  'use strict';
+  const stage = document.getElementById('scene');
+  const canvas = document.getElementById('sceneCanvas');
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const narrow = matchMedia('(max-width: 900px)');
+  const colors = { online: '#52f5b1', attention: '#f6c463', critical: '#ff777e', error: '#ff777e', offline: '#748a90', unknown: '#748a90' };
+  let width = 1, height = 1, dpr = 1, cx = 0, cy = 0, radius = 130, bounds, nodes = [];
+  let frame = 0, last = 0, time = 0, rendered = 0, paused = false, dialogOpen = false, active = null, pulse = -10;
+  let cursor = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
+  // Chuva digital decorativa: somente nas laterais, atrás dos módulos.
+  // Glifos rasterizados na densidade real da tela, não um GIF ampliado.
+  const matrixGlyphs = [...'012345789ZXY<>:ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈ'];
+  const matrixPalette = ['#2c9d86', '#52f5b1', '#d1fff0'];
+  let matrixLayers = [], matrixBand = 0;
+  const noise = seed => { const v = Math.sin(seed * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+  const ramp = (from, to, value) => {
+    const t = Math.max(0, Math.min(1, (value - from) / (to - from)));
+    return t * t * (3 - 2 * t);
+  };
+  const stars = Array.from({ length: 145 }, (_, i) => ({
+    x: ((Math.sin(i * 127.1) * 43758.5453) % 1 + 1) % 1,
+    y: ((Math.sin(i * 269.5) * 24738.1431) % 1 + 1) % 1,
+    size: .35 + (i % 4) * .23, phase: i * 1.36
+  }));
+  function geometry() {
+    bounds = stage.getBoundingClientRect();
+    width = Math.max(1, bounds.width); height = Math.max(1, bounds.height);
+    // Resolução 4K nativa em DPR 1; limite de pixels em telas muito densas.
+    dpr = Math.max(1, Math.min(devicePixelRatio || 1, 2, Math.sqrt(12000000 / (width * height))));
+    canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+    const core = document.getElementById('core').getBoundingClientRect();
+    cx = core.left + core.width / 2 - bounds.left;
+    cy = core.top + core.height / 2 - bounds.top;
+    radius = core.width * .57;
+    prepareMatrix();
+    nodes = [...stage.querySelectorAll('.service-node')].map((element, i) => {
+      const r = element.getBoundingClientRect();
+      return { element, card: element.querySelector('button'), x: r.left + r.width / 2 - bounds.left, y: r.top + r.height / 2 - bounds.top, w: r.width, h: r.height, index: i };
+    });
+    requestDraw();
+  }
+  function prepareMatrix() {
+    if (!ctx) return;
+    const scale = Math.max(.8, Math.min(width / 1854, 2.5));
+    matrixBand = width * (narrow.matches ? .12 : .225);
+    matrixLayers = [
+      { size: 10, spacing: 24, speed: 30, opacity: .32, length: 28 },
+      { size: 14, spacing: 29, speed: 58, opacity: .76, length: 25 }
+    ].map((settings, layer) => {
+      const size = settings.size * scale;
+      const cell = Math.ceil(size * 1.55 * dpr);
+      const atlas = document.createElement('canvas');
+      atlas.width = cell * matrixGlyphs.length;
+      atlas.height = cell * matrixPalette.length;
+      const pen = atlas.getContext('2d');
+      if (!pen) return null;
+      pen.font = `${Math.round(size * dpr)}px Consolas, "Yu Gothic", monospace`;
+      pen.textAlign = 'center'; pen.textBaseline = 'middle';
+      matrixPalette.forEach((color, row) => {
+        pen.fillStyle = color;
+        pen.shadowColor = '#52f5b1';
+        pen.shadowBlur = row === 2 ? size * dpr * .3 : 0;
+        matrixGlyphs.forEach((glyph, col) => pen.fillText(glyph, (col + .5) * cell, (row + .5) * cell));
+      });
+      const columns = [];
+      const spacing = settings.spacing * scale;
+      for (let side = 0; side < 2; side++) {
+        for (let i = 0; i * spacing < matrixBand; i++) {
+          const seed = 17 + side * 331 + layer * 719 + i * 13;
+          const edge = (i + .3 + noise(seed) * .45) * spacing;
+          columns.push({
+            seed, x: side ? width - edge : edge,
+            fade: (1 - ramp(matrixBand * .22, matrixBand, edge)) * (.6 + noise(seed + 1) * .4),
+            speed: settings.speed * scale * (.65 + noise(seed + 2) * .8),
+            length: Math.round(settings.length * (.65 + noise(seed + 3) * .65)),
+            phase: noise(seed + 4), gap: .18 + noise(seed + 5) * .35
+          });
+        }
+      }
+      return { ...settings, atlas, cell, size, rowHeight: size * 1.32, columns };
+    }).filter(Boolean);
+  }
+  function matrixRain() {
+    ctx.save();
+    // Faixa central totalmente protegida; o brilho também fica dentro do recorte.
+    ctx.beginPath(); ctx.rect(0, 0, matrixBand, height);
+    ctx.rect(width - matrixBand, 0, matrixBand, height); ctx.clip();
+    matrixLayers.forEach((layer, depth) => {
+      const { atlas, cell, rowHeight } = layer;
+      const glyphSize = cell / dpr;
+      layer.columns.forEach(column => {
+        if (column.fade < .01) return;
+        const tail = column.length * rowHeight;
+        const travel = height * (1 + column.gap) + tail;
+        const distance = time * column.speed + column.phase * travel;
+        const head = distance % travel;
+        const cycle = Math.floor(distance / travel);
+        const row = Math.floor(head / rowHeight);
+        for (let j = column.length - 1; j >= 0; j--) {
+          const y = (row - j) * rowHeight;
+          if (y < 0 || y > height) continue;
+          const edgeFade = ramp(0, height * .075, y) * (1 - ramp(height * .86, height, y));
+          const trail = Math.pow(1 - j / column.length, 1.65);
+          const alpha = column.fade * edgeFade * trail * layer.opacity * (narrow.matches ? .52 : 1);
+          if (alpha < .018) continue;
+          // Mutação espaçada: preserva a leitura dos símbolos, sem flashes rápidos.
+          const mutation = Math.floor(time * (depth ? 2.5 : 1.3) + column.phase * 7);
+          const index = Math.floor(noise(column.seed + (row - j) * 23 + cycle * 61 + mutation * 3) * matrixGlyphs.length);
+          const shade = j === 0 ? 2 : depth ? 1 : 0;
+          const x = column.x - glyphSize / 2;
+          ctx.globalAlpha = alpha;
+          ctx.drawImage(atlas, index * cell, shade * cell, cell, cell, x, y - glyphSize / 2, glyphSize, glyphSize);
+        }
+      });
+    });
+    ctx.restore();
+  }
+  function project(x, y, z, yaw, pitch, roll = 0) {
+    const xx = x * Math.cos(yaw) + z * Math.sin(yaw);
+    const zz = -x * Math.sin(yaw) + z * Math.cos(yaw);
+    const yy = y * Math.cos(pitch) - zz * Math.sin(pitch);
+    const depth = y * Math.sin(pitch) + zz * Math.cos(pitch);
+    const perspective = 4 / (4 + depth);
+    return {
+      x: cx + (xx * Math.cos(roll) - yy * Math.sin(roll)) * radius * perspective,
+      y: cy + (xx * Math.sin(roll) + yy * Math.cos(roll)) * radius * perspective,
+      z: depth
+    };
+  }
+  function polyline(points, color, alpha = .2, lineWidth = .7) {
+    ctx.globalAlpha = alpha; ctx.strokeStyle = color; ctx.lineWidth = lineWidth;
+    ctx.beginPath();
+    points.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+    ctx.stroke(); ctx.globalAlpha = 1;
+  }
+  function bead(point, color, size = 2) {
+    ctx.fillStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.arc(point.x, point.y, size, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+  }
+  function globe() {
+    const yaw = time * .065 + smooth.x * .1;
+    const pitch = .21 + smooth.y * .06;
+    for (let lat = -4; lat <= 4; lat++) {
+      const theta = lat * Math.PI / 10;
+      const pts = [];
+      for (let n = 0; n <= 64; n++) {
+        const a = n * Math.PI / 32;
+        pts.push(project(Math.cos(theta) * Math.cos(a), Math.sin(theta), Math.cos(theta) * Math.sin(a), yaw, pitch));
+      }
+      polyline(pts, '#57e8ae', .24, .8);
+    }
+    for (let lon = 0; lon < 12; lon++) {
+      const a = lon * Math.PI / 6;
+      const pts = [];
+      for (let n = 0; n <= 64; n++) {
+        const b = n * Math.PI / 32;
+        pts.push(project(Math.cos(a) * Math.cos(b), Math.sin(b), Math.sin(a) * Math.cos(b), yaw, pitch));
+      }
+      polyline(pts, '#4adaae', .18, .8);
+    }
+    for (let ring = 0; ring < 3; ring++) {
+      const pts = [], size = 1.26 + ring * .12, rp = [1.0, -.78, .44][ring], rr = [.22, -.62, .96][ring];
+      for (let i = 0; i <= 130; i++) {
+        const a = i * Math.PI / 65;
+        pts.push(project(size * Math.cos(a), size * Math.sin(a), 0, yaw * .3, rp, rr));
+      }
+      polyline(pts, ring === 1 ? '#5fd9e5' : '#63eec0', ring === 1 ? .65 : .42, ring === 1 ? 1.35 : 1);
+      const at = ((time * (ring % 2 ? -10 : 13) + ring * 40) % 130 + 130) % 130;
+      bead(pts[Math.floor(at)], ring === 1 ? '#9ef4fa' : '#b9ffdd', width > 2500 ? 3.8 : 2.5);
+      const tail = [];
+      for (let n = 0; n < 15; n++) tail.push(pts[(Math.floor(at) - n + 130) % 130]);
+      polyline(tail, '#a8ffcf', .72, width > 2500 ? 2 : 1.1);
+    }
+    // Marcações exteriores fixam a leitura enquanto as órbitas giram.
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(time * .012);
+    for (let i = 0; i < 120; i++) {
+      const a = i * Math.PI / 60, r = radius * 1.46;
+      const long = i % 10 === 0;
+      ctx.strokeStyle = long ? '#89edc56b' : '#89edc522'; ctx.lineWidth = long ? 1.5 : .6;
+      ctx.beginPath(); ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+      ctx.lineTo(Math.cos(a) * (r + (long ? 8 : 3)), Math.sin(a) * (r + (long ? 8 : 3))); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bezier(a, b, c, t) {
+    const v = 1 - t;
+    return { x: v*v*a.x + 2*v*t*b.x + t*t*c.x, y: v*v*a.y + 2*v*t*b.y + t*t*c.y };
+  }
+  function connections() {
+    const unit = Math.max(.75, width / 1920);
+    nodes.forEach(n => {
+      const isActive = active === n.element.dataset.service;
+      const moving = !paused && !reduced.matches && !narrow.matches;
+      const floatingX = moving ? Math.sin(time * .48 + n.index * .9) * 4 * unit : 0;
+      const floatingY = moving ? Math.sin(time * .66 + n.index * 1.3) * 7 * unit : 0;
+      const px = moving ? smooth.x * (n.index % 2 ? 5 : 8) * unit : 0, py = moving ? smooth.y * 5 * unit : 0;
+      n.element.style.setProperty('--float-x', (floatingX + px).toFixed(2) + 'px');
+      n.element.style.setProperty('--float-y', (floatingY + py).toFixed(2) + 'px');
+      n.element.style.setProperty('--rx', (moving ? -smooth.y * 3 + Math.sin(time * .3 + n.index) * 1.2 : 0).toFixed(2) + 'deg');
+      n.element.style.setProperty('--ry', (moving ? smooth.x * 4 + Math.sin(time * .25 + n.index) * 2 : 0).toFixed(2) + 'deg');
+      n.element.style.setProperty('--depth', isActive && moving ? '22px' : '0px');
+      if (narrow.matches) return;
+      const color = colors[n.element.dataset.state] || colors.unknown;
+      const target = { x: n.x + floatingX + px, y: n.y + floatingY + py };
+      const dx = target.x - cx, dy = target.y - cy, length = Math.hypot(dx, dy);
+      const start = { x: cx + dx / length * radius * 1.06, y: cy + dy / length * radius * 1.06 };
+      const end = { x: target.x + (dx < 0 ? n.w / 2 : -n.w / 2), y: target.y };
+      const control = { x: start.x + (end.x - start.x) * .6, y: start.y + (end.y - start.y) * .18 };
+      const pts = Array.from({length:33}, (_, j) => bezier(start,control,end,j/32));
+      polyline(pts,color,isActive ? .95 : .37,isActive ? 2 : 1);
+      if (!['offline','unknown'].includes(n.element.dataset.state)) {
+        for (let j = 0; j < 3; j++) {
+          const t = (time * .12 + j / 3 + n.index * .137) % 1;
+          const tail = Array.from({length:7}, (_, k) => bezier(start,control,end,Math.max(0,t-k*.012)));
+          polyline(tail,color,.6,isActive ? 2.2 : 1.5);
+          bead(bezier(start,control,end,t),color,isActive ? 3*unit : 1.6*unit);
+        }
+      }
+      bead(end,color,1.6*unit);
+    });
+  }
+  function render() {
+    if (!ctx) return;
+    ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,width,height);
+    matrixRain();
+    const spaceHeight = narrow.matches ? 350 : height;
+    const haze = ctx.createRadialGradient(cx,cy,radius*.4,cx,cy,radius*2.3);
+    haze.addColorStop(0,'#40e0a409'); haze.addColorStop(.48,'#32e8b008'); haze.addColorStop(1,'#32e8b000');
+    ctx.fillStyle = haze; ctx.fillRect(0,0,width,spaceHeight);
+    stars.forEach(s => {
+      const x = (s.x * width + Math.sin(time*.06+s.phase)*7 + smooth.x*8 + width) % width;
+      const y = s.y * spaceHeight;
+      ctx.globalAlpha = .15 + (.5 + Math.sin(time*.5+s.phase)*.5)*.35;
+      ctx.fillStyle = '#a5fada'; ctx.beginPath(); ctx.arc(x,y,s.size*Math.max(1,width/2300),0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1; connections(); globe();
+    if(time-pulse<1.8) {
+      const age=(time-pulse)/1.8;
+      ctx.strokeStyle='#9fffe3'; ctx.globalAlpha=(1-age)*.55; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.ellipse(cx,cy,radius*(1+age*2.6),radius*(.4+age),-.2,0,Math.PI*2); ctx.stroke();ctx.globalAlpha=1;
+    }
+  }
+  function tick(now) {
+    frame=0;
+    const still = paused || reduced.matches || dialogOpen;
+    if (!still && last) time += Math.min((now-last)/1000,.1);
+    last=now;
+    if(now-rendered>=(width>2500?1000/30:1000/45)-1 || still) {
+      smooth.x += (cursor.x-smooth.x)*.08; smooth.y += (cursor.y-smooth.y)*.08;
+      stage.style.setProperty('--scene-rx', (-smooth.y*4).toFixed(2)+'deg');
+      stage.style.setProperty('--scene-ry', (smooth.x*5).toFixed(2)+'deg');
+      render();rendered=now;
+    }
+    if(!still && !document.hidden) frame=requestAnimationFrame(tick);
+  }
+  function requestDraw(){if(!frame && !document.hidden)frame=requestAnimationFrame(tick);}
+  stage.addEventListener('pointermove', e => {
+    if(paused || reduced.matches || narrow.matches || e.pointerType==='touch')return;
+    const rect=stage.getBoundingClientRect();
+    cursor.x=(e.clientX-rect.left)/width*2-1;cursor.y=(e.clientY-rect.top)/height*2-1;
+    active=e.target.closest('[data-service]')?.dataset.service || null;requestDraw();
+  },{passive:true});
+  stage.addEventListener('pointerleave',()=>{cursor={x:0,y:0};active=null;requestDraw();});
+  stage.addEventListener('focusin',e=>{active=e.target.closest('[data-service]')?.dataset.service || null;requestDraw();});
+  stage.addEventListener('focusout',()=>{active=null;requestDraw();});
+  stage.addEventListener('click',()=>{pulse=time;requestDraw();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else{last=0;requestDraw();}});
+  reduced.addEventListener('change',()=>{last=0;geometry();});
+  new ResizeObserver(geometry).observe(stage);
+  window.addEventListener('resize',geometry,{passive:true});
+  window.NocScene={
+    refresh:geometry,
+    invalidate:requestDraw,
+    setPaused(value){paused=value;cursor={x:0,y:0};smooth={x:0,y:0};last=0;document.body.classList.toggle('motion-paused',value);requestDraw();},
+    setDialogOpen(value){dialogOpen=value;last=0;requestDraw();},
+    reducedMotion:reduced
+  };
+  geometry();
+})();
+
+</script>
+  <script>
+(() => {
+  'use strict';
+  const cfg = window.NOC_CONFIG || {};
+  const $ = s => document.querySelector(s);
+  const esc = v => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const statusNames = {online:'Normal',attention:'Atenção',critical:'Crítico',error:'Erro',offline:'Offline',unknown:'Indisponível',info:'Informativo'};
+  const svg = id => `<svg aria-hidden="true"><use href="#i-${id}"/></svg>`;
+  const services = [
+    {id:'android',title:'Dispositivos Android',code:'FIELD / 01',x:27,y:19,view:'devices'},
+    {id:'api',title:'API principal',code:'SERVICE / 02',x:73,y:19,view:'api'},
+    {id:'maps',title:'Geolocalização',code:'LOCATION / 03',x:14,y:43,view:'maps'},
+    {id:'database',title:'Banco de dados',code:'FIRESTORE / 04',x:86,y:43,view:'database'},
+    {id:'logs',title:'Coletor de logs',code:'TELEMETRY / 05',x:14,y:69,view:'events'},
+    {id:'notifications',title:'Notificações',code:'MESSAGING / 06',x:86,y:69,view:'notifications'},
+    {id:'infrastructure',title:'Infraestrutura',code:'HEALTH / 07',x:32,y:84,view:'infrastructure'},
+    {id:'alerts',title:'Central de alertas',code:'INCIDENTS / 08',x:68,y:84,view:'alerts'}
+  ];
+  const state={mode:'loading',connected:false,data:null,error:'',filter:'all',severity:'all',drawer:null,hadLive:false,loading:false,paused:false};
+  let mapLoader, mapMarkers=[], toastTimer, returnFocus;
+  function dateOf(v) {
+    if(!v)return null;
+    const d=new Date(typeof v==='object' && (v._seconds ?? v.seconds)!=null ? (v._seconds ?? v.seconds)*1000 : v);
+    return Number.isFinite(d.valueOf())?d:null;
+  }
+  function ago(v){const d=dateOf(v);if(!d)return 'Sem registro';const ms=Math.max(0,Date.now()-d.valueOf());return ms<60000?'agora':ms<3600000?`há ${Math.floor(ms/60000)} min`:`há ${Math.floor(ms/3600000)} h`;}
+  function stamp(v){return dateOf(v)?.toLocaleString('pt-BR') || 'Sem registro';}
+  function num(v,suffix=''){return typeof v==='number' && Number.isFinite(v)?v.toLocaleString('pt-BR')+suffix:'Indisponível';}
+  function severity(v){return Object.hasOwn(statusNames,v)?v:'unknown';}
+  function dot(v){return `<i class="dot ${severity(v)}" aria-hidden="true"></i>`;}
+  const devices=()=>state.data?.devices || [];
+  const events=()=>state.data?.events || [];
+  const alerts=()=>state.data?.alerts || [];
+  function pairs(entries){return '<dl class="detail-grid">'+entries.map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')+'</dl>';}
+  function demo() {
+    const now=Date.now(), at=s=>new Date(now-s*1000).toISOString();
+    return {generatedAt:at(0),mode:'demo',settings:{onlineSeconds:120,attentionSeconds:600,lowBatteryPercent:15,minAppVersion:'3.57'},
+      devices:[
+        {id:'DEMO-01',name:'Campo A · 07',status:'online',lastSeenAt:at(22),appVersion:'3.57',battery:82,connectionType:'4G',signalStrength:87,queueDepth:0,lastSyncAt:at(50),model:'Dispositivo demonstrativo'},
+        {id:'DEMO-02',name:'Campo B · 12',status:'online',lastSeenAt:at(42),appVersion:'3.57',battery:61,connectionType:'Wi-Fi',signalStrength:94,queueDepth:2,lastSyncAt:at(90)},
+        {id:'DEMO-03',name:'Campo C · 03',status:'attention',lastSeenAt:at(420),appVersion:'3.54',battery:18,connectionType:'4G',signalStrength:38,queueDepth:7,lastSyncAt:at(800)},
+        {id:'DEMO-04',name:'Oficina · 02',status:'offline',lastSeenAt:at(900),appVersion:'3.51',battery:null,connectionType:'Indisponível',queueDepth:0},
+        {id:'DEMO-05',name:'Campo A · 09',status:'online',lastSeenAt:at(58),appVersion:'3.57',battery:76,connectionType:'4G',signalStrength:76,queueDepth:0,lastSyncAt:at(90)}
+      ],
+      alerts:[
+        {id:'DEMO-alert-01',deviceId:'DEMO-04',severity:'critical',type:'device_offline',message:'Oficina · 02 sem comunicação há 15 minutos.',createdAt:at(180)},
+        {id:'DEMO-alert-02',deviceId:'DEMO-03',severity:'attention',type:'app_outdated',message:'Campo C · 03 com APK abaixo da versão mínima.',createdAt:at(300)}
+      ],
+      events:[
+        {type:'heartbeat',severity:'info',message:'Campo A · 07 confirmou comunicação.',createdAt:at(22)},
+        {type:'device_offline',severity:'critical',message:'Oficina · 02 perdeu a conexão.',createdAt:at(180)},
+        {type:'app_version',severity:'attention',message:'Campo C · 03 precisa atualizar o aplicativo.',createdAt:at(300)}
+      ],infrastructure:{api:{status:'healthy',measuredAt:at(0)},clientLatency:84}
+    };
+  }
+  function serviceState(id) {
+    if(!state.connected)return {status:'unknown',detail:'Aguardando comunicação',label:'SEM DADOS ATUAIS'};
+    const list=devices(), count=list.length, bad=list.filter(d=>d.status!=='online').length;
+    const validPositions=list.filter(d=>d.location && Number.isFinite(d.location.latitude) && Number.isFinite(d.location.longitude));
+    const simulated=state.mode==='demo';
+    switch(id) {
+      case 'android':return {status:bad?'attention':count?'online':'unknown',detail:`${count} aparelhos · ${list.filter(d=>d.status==='online').length} online`,label:bad?`${bad} DISPOSITIVOS EM ATENÇÃO`:'TELEMETRIA DOS DISPOSITIVOS'};
+      case 'api':return {status:state.data?.infrastructure?.api?.status==='healthy'?'online':'unknown',detail:num(state.data?.infrastructure?.clientLatency,' ms')+' · consulta NOC',label:simulated?'RESPOSTA SIMULADA':'API NOC RESPONDENDO'};
+      case 'database':return {status:'unknown',detail:'Persistência da telemetria',label:'SAÚDE NÃO INSTRUMENTADA'};
+      case 'maps':return {status:validPositions.length?'online':'unknown',detail:validPositions.length?`${validPositions.length} posições autorizadas`:'Sem posição autorizada',label:validPositions.length?'VER MAPA OPERACIONAL':'AGUARDANDO LOCALIZAÇÃO'};
+      case 'logs':return {status:events().length?'online':'unknown',detail:`${events().length} eventos no histórico recente`,label:simulated?'EVENTOS DE DEMONSTRAÇÃO':'EVENTOS RECEBIDOS'};
+      case 'notifications':return {status:'unknown',detail:'Canal administrativo',label:'INTEGRAÇÃO PENDENTE'};
+      case 'infrastructure':return {status:'unknown',detail:'CPU · memória · armazenamento',label:'MÉTRICAS INDISPONÍVEIS'};
+      case 'alerts':return {status:alerts().some(a=>['critical','error'].includes(a.severity))?'critical':alerts().length?'attention':'online',detail:`${alerts().length} alertas abertos`,label:alerts().length?'EXIGE ACOMPANHAMENTO':'SEM ALERTAS ABERTOS'};
+      default:return {status:'unknown',detail:'Sem dados',label:'INDISPONÍVEL'};
+    }
+  }
+  function buildNodes() {
+    $('#serviceNodes').innerHTML=services.map(s=>`<div class="service-node" data-service="${s.id}" data-state="unknown" style="--x:${s.x}%;--y:${s.y}%">
+      <button class="node-card" data-open="${s.view}" aria-label="Abrir ${s.title}">
+        <span class="node-head"><span class="node-icon">${svg(s.id)}</span><span class="node-code">${s.code}</span></span>
+        <span class="node-heading"><b class="node-title">${s.title}</b><svg class="node-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+        <span class="node-detail">Aguardando comunicação</span><span class="node-status"><i></i><span>SEM DADOS</span></span>
+      </button></div>`).join('');
+    window.NocScene?.refresh();
+  }
+  function render() {
+    const list=devices(), counts={total:list.length,online:0,attention:0,offline:0,alerts:alerts().length};
+    list.forEach(d=>{if(Object.hasOwn(counts,d.status))counts[d.status]++;});
+    ['Total','Online','Attention','Offline','Alerts'].forEach(k=>$('#count'+k).textContent=state.data?String(counts[k.toLowerCase()]).padStart(2,'0'):'—');
+    const demoMode=state.mode==='demo';
+    const critical=alerts().some(a=>['critical','error'].includes(a.severity));
+    $('#operationState').dataset.state=demoMode?'attention':!state.connected||critical?'critical':counts.attention||counts.offline?'attention':'online';
+    $('#operationLabel').textContent=demoMode?'MODO DEMONSTRAÇÃO':!state.connected?'COMUNICAÇÃO INTERROMPIDA':critical?'OPERAÇÃO EM ESTADO CRÍTICO':counts.offline||counts.attention?'ATENÇÃO OPERACIONAL':'SISTEMA OPERACIONAL';
+    $('#connectionLabel').textContent=demoMode?'Cenário simulado · sem conexão com campo':state.connected?'Canal conectado · atualização periódica':state.error || 'Aguardando autenticação';
+    $('#sourceLabel').textContent=demoMode?'DEMONSTRAÇÃO · DADOS SIMULADOS':state.connected?'TELEMETRIA RECEBIDA DO NOC':'DADOS NÃO ATUALIZADOS';
+    $('#coreStatus').innerHTML='<i></i>'+(demoMode?'SIMULAÇÃO ATIVA':state.connected?'NÚCLEO CONECTADO':'SEM COMUNICAÇÃO');
+    $('#coreCaption').textContent=demoMode?'Visualização demonstrativa da rede':state.connected?'Observabilidade · Conectividade · Campo':'Últimos dados podem estar desatualizados';
+    $('#eventSource').textContent=demoMode?'Eventos simulados':'Últimos registros recebidos';
+    $('#lastUpdate').textContent='ATUALIZAÇÃO '+(state.data?stamp(state.data.generatedAt):'INDISPONÍVEL');
+    for(const s of services) {
+      const view=serviceState(s.id), node=$('[data-service="'+s.id+'"]');
+      node.dataset.state=view.status;node.querySelector('.node-detail').textContent=view.detail;node.querySelector('.node-status span').textContent=view.label;
+    }
+    $('#eventPreview').innerHTML=events().slice(0,2).map(e=>`<div class="preview-event">${dot(e.severity)}<p>${esc(e.message)}</p><small>${esc(ago(e.createdAt))} · ${esc(statusNames[e.severity]||'Evento')}</small></div>`).join('') || '<span class="empty">Nenhum evento recebido.</span>';
+    if($('#drawer').open && ['devices','events','alerts'].includes(state.drawer))renderDrawerContent();
+    window.NocScene?.invalidate();
+  }
+  async function load() {
+    if(state.loading)return;state.loading=true;$('#refresh').disabled=true;
+    const controller=new AbortController(), timeout=setTimeout(()=>controller.abort(),12000);
+    try {
+      const token=await cfg.getIdToken?.();
+      if(!token) {
+        if(state.hadLive){state.mode='live';state.connected=false;state.data=null;state.error='Sessão encerrada. Autentique-se novamente.';}
+        else{state.data=demo();state.mode='demo';state.connected=true;state.error='';}
+      }else{
+        const start=performance.now();
+        const response=await fetch((cfg.apiBaseUrl||'/noc-api')+'/snapshot',{headers:{Authorization:'Bearer '+token},cache:'no-store',signal:controller.signal});
+        if(!response.ok) {
+          if(response.status===401 || response.status===403)state.data=null;
+          throw new Error(response.status===403?'Perfil sem acesso ao NOC':response.status===401?'Sessão expirada':`Falha de comunicação (HTTP ${response.status})`);
+        }
+        const data=await response.json();
+        if(data.ok!==true || !Array.isArray(data.devices) || !Array.isArray(data.events))throw new Error('Resposta de telemetria inválida');
+        data.infrastructure={...data.infrastructure,clientLatency:Math.round(performance.now()-start)};
+        state.data=data;state.mode='live';state.connected=true;state.hadLive=true;state.error='';
+      }
+    }catch(error){
+      // Uma indisponibilidade real nunca é substituída por operação simulada.
+      if(state.mode==='demo')state.data=null;
+      state.mode='live';state.connected=false;state.error=error.name==='AbortError'?'Tempo de resposta excedido':error.message;
+    }finally{clearTimeout(timeout);state.loading=false;$('#refresh').disabled=false;render();}
+  }
+  function open(view,filter) {
+    if(!$('#drawer').open)returnFocus=document.activeElement;
+    state.drawer=view;if(filter)state.filter=filter;
+    const names={core:'NOC CORE',devices:'Dispositivos em campo',api:'Saúde da API',database:'Banco de dados',maps:'Mapa operacional',events:'Telemetria e eventos',notifications:'Notificações',infrastructure:'Infraestrutura',alerts:'Alertas operacionais',device:'Detalhes do dispositivo'};
+    $('#drawerTitle').textContent=names[view]||'Detalhes';
+    $('#drawerKicker').textContent=state.mode==='demo'?'DEMONSTRAÇÃO · DADOS SIMULADOS':'NOC ALMOXARIFADO RIACHO';
+    renderDrawerContent();
+    if(!$('#drawer').open){$('#drawer').showModal();window.NocScene?.setDialogOpen(true);}
+    if(view==='maps')void renderMap();
+  }
+  function renderDrawerContent() {
+    const target=$('#drawerContent'), s=state.data?.settings||{};
+    const context=state.mode==='demo'?'<p class="note warning">Demonstração: os dispositivos, alertas e eventos desta sessão são simulados.</p>':!state.connected?'<p class="note warning">Comunicação interrompida. Os últimos registros podem estar desatualizados.</p>':'';
+    let html='';
+    switch(state.drawer) {
+      case 'devices':html=renderDevices();break;
+      case 'events':html=renderEvents();break;
+      case 'alerts':html=alerts().length?alerts().map(a=>`<article class="alert-row"><span class="level-label">${dot(a.severity)} ${esc(statusNames[a.severity]||'Atenção')}</span><p>${esc(a.message)}</p><small>${esc(a.deviceId||'Serviço')} · ${esc(stamp(a.createdAt))}</small>${a.acknowledgedAt?'<p>Reconhecido pela operação.</p>':''}</article>`).join(''):'<p class="empty">Nenhum alerta aberto no último snapshot.</p>';break;
+      case 'core':html='<p>O núcleo reúne a comunicação dos dispositivos, o estado dos serviços e os eventos operacionais.</p>'+pairs([['Limite online',s.onlineSeconds!=null?s.onlineSeconds+' segundos':'Não configurado'],['Limite de atenção',s.attentionSeconds!=null?s.attentionSeconds+' segundos':'Não configurado'],['Bateria crítica',s.lowBatteryPercent!=null?s.lowBatteryPercent+'%':'Não configurado'],['APK mínimo',s.minAppVersion||'Não definido']])+'<p class="note">Use tela cheia para a central de monitoramento. A tecla F alterna a exibição; os efeitos podem ser pausados no cabeçalho.</p>';break;
+      case 'api':html=pairs([['Resposta à consulta NOC',num(state.data?.infrastructure?.clientLatency,' ms')],['Última medição',stamp(state.data?.infrastructure?.api?.measuredAt)],['Disponibilidade histórica','Indisponível'],['Latência p95','Indisponível'],['Requisições / minuto','Indisponível'],['Taxa de erros','Indisponível']])+'<p class="note">A latência exibida mede a consulta entre este painel e a API NOC. Métricas da API operacional ainda dependem do seu monitoramento.</p>';break;
+      case 'infrastructure':html=pairs([['CPU','Indisponível'],['Memória','Indisponível'],['Armazenamento','Indisponível'],['Tráfego de rede','Indisponível']])+'<p>As métricas de infraestrutura serão apresentadas quando o provedor disponibilizar as medições.</p>';break;
+      case 'database':html='<p>O armazenamento da telemetria utiliza o Firestore. Ainda não há uma medição independente da saúde do banco.</p><p class="note">Estado atual: indisponível para monitoramento.</p>';break;
+      case 'notifications':html='<p>O canal de notificações administrativas aguarda integração. Os alertas disponíveis já podem ser consultados na central de alertas.</p><button class="action-btn" data-open="alerts">Ver alertas operacionais</button>';break;
+      case 'maps':html='<p>Localização vinculada à atividade operacional e exibida somente quando autorizada.</p><div id="mapStatus" class="note">Consultando posições disponíveis…</div><div id="mapSurface" class="map-surface" hidden></div><div id="mapPositions"></div>';break;
+      case 'device': {
+        const d=devices().find(v=>v.id===state.deviceId);
+        html=d?pairs([['Identificador',d.id],['Status',statusNames[d.status]||'Indisponível'],['Última comunicação',stamp(d.lastSeenAt)],['Última sincronização',stamp(d.lastSyncAt)],['Versão do APK',d.appVersion||'Indisponível'],['Android / modelo',[d.androidVersion,d.model].filter(Boolean).join(' · ')||'Indisponível'],['Bateria',num(d.battery,'%')],['Conexão',d.connectionType||'Indisponível'],['Qualidade do sinal',num(d.signalStrength,'%')],['Fila pendente',num(d.queueDepth)],['Localização',d.location?stamp(d.location.capturedAt):'Sem posição autorizada'],['Precisão',d.location?num(d.location.accuracy,' m'):'Indisponível']])+'<button class="action-btn" data-open="devices">Voltar aos dispositivos</button>':'<p>Dispositivo indisponível.</p>';break;
+      }
+    }
+    target.innerHTML=context+html;
+  }
+  function renderDevices() {
+    const choices={all:'Todos',online:'Online',attention:'Atenção',offline:'Offline'};
+    const list=state.filter==='all'?devices():devices().filter(d=>d.status===state.filter);
+    return '<div class="filters">'+Object.entries(choices).map(([id,label])=>`<button class="${state.filter===id?'active':''}" data-filter="${id}" aria-pressed="${state.filter===id}">${label}</button>`).join('')+'</div>'+
+      (list.length?list.map(d=>`<button class="device-row" data-device="${esc(d.id)}">${dot(d.status)}<span><b>${esc(d.name)}</b><small>${esc(d.appVersion||'—')} · ${esc(d.connectionType||'—')} · ${esc(ago(d.lastSeenAt))}</small></span><strong>${d.battery==null?'—':esc(d.battery)+'%'}</strong></button>`).join(''):'<p class="empty">Nenhum dispositivo neste filtro.</p>');
+  }
+  function renderEvents() {
+    const choices={all:'Todos',info:'Informativo',attention:'Atenção',critical:'Crítico',error:'Erro'};
+    const list=state.severity==='all'?events():events().filter(e=>e.severity===state.severity);
+    return '<div class="filters">'+Object.entries(choices).map(([id,label])=>`<button class="${state.severity===id?'active':''}" data-severity="${id}" aria-pressed="${state.severity===id}">${label}</button>`).join('')+'</div>'+
+      (list.length?list.map(e=>`<article class="event-row"><span class="level-label">${dot(e.severity)} ${esc(statusNames[e.severity]||'Evento')}</span><p>${esc(e.message)}</p><small>${esc(e.type)} · ${esc(stamp(e.createdAt))}</small></article>`).join(''):'<p class="empty">Nenhum evento neste filtro.</p>');
+  }
+  function loadMaps() {
+    if(window.google?.maps)return Promise.resolve();
+    if(mapLoader)return mapLoader;
+    mapLoader=new Promise((resolve,reject)=>{
+      const script=document.createElement('script');
+      const fail=()=>{clearTimeout(timer);mapLoader=null;script.remove();reject(new Error('Não foi possível carregar o mapa.'));};
+      const timer=setTimeout(fail,15000);
+      window.__nocMapsReady=()=>{clearTimeout(timer);resolve();};
+      script.src='https://maps.googleapis.com/maps/api/js?loading=async&callback=__nocMapsReady&key='+encodeURIComponent(cfg.googleMapsApiKey);
+      script.async=true;script.onerror=fail;document.head.appendChild(script);
+    });return mapLoader;
+  }
+  async function renderMap() {
+    const positions=devices().filter(d=>Number.isFinite(d.location?.latitude)&&Number.isFinite(d.location?.longitude));
+    const status=$('#mapStatus');if(!status)return;
+    if(!positions.length){status.textContent='Nenhuma posição autorizada recebida. O mapa não apresenta coordenadas simuladas.';return;}
+    $('#mapPositions').innerHTML=positions.map(d=>`<button class="device-row" data-device="${esc(d.id)}">${dot(d.status)}<span><b>${esc(d.name)}</b><small>${esc(ago(d.location.capturedAt))} · precisão ${esc(num(d.location.accuracy,' m'))}${d.locationStale?' · POSIÇÃO DESATUALIZADA':''}</small></span>${svg('arrow')}</button>`).join('');
+    if(!cfg.googleMapsApiKey){status.textContent='Mapa indisponível: a configuração do serviço de mapas está pendente.';return;}
+    try {
+      await loadMaps();if(state.drawer!=='maps'||!$('#drawer').open)return;
+      const surface=$('#mapSurface');surface.hidden=false;status.textContent=positions.length+' posições autorizadas. Clique para abrir os detalhes.';
+      const map=new google.maps.Map(surface,{center:{lat:positions[0].location.latitude,lng:positions[0].location.longitude},zoom:11,disableDefaultUI:true,zoomControl:true});
+      mapMarkers.forEach(m=>m.setMap(null));
+      const bounds=new google.maps.LatLngBounds();
+      mapMarkers=positions.map(d=>{const position={lat:d.location.latitude,lng:d.location.longitude};bounds.extend(position);const m=new google.maps.Marker({map,position,title:d.name,icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:{online:'#52f5b1',attention:'#f6c463',offline:'#748a90'}[d.status]||'#748a90',fillOpacity:1,strokeWeight:1,scale:8}});m.addListener('click',()=>{state.deviceId=d.id;open('device');});return m;});
+      if(positions.length>1)map.fitBounds(bounds,32);
+    }catch(error){if($('#mapStatus'))$('#mapStatus').textContent=error.message;}
+  }
+  function close(){if($('#drawer').open)$('#drawer').close();}
+  $('#drawer').addEventListener('close',()=>{state.drawer=null;window.NocScene?.setDialogOpen(false);mapMarkers.forEach(m=>m.setMap(null));mapMarkers=[];returnFocus?.focus();});
+  $('#closeDrawer').onclick=close;
+  $('#drawer').addEventListener('click',e=>{if(e.target===$('#drawer')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)close();}});
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.open)open(b.dataset.open,b.dataset.status);
+    if(b.dataset.device){state.deviceId=b.dataset.device;open('device');}
+    if(b.dataset.filter){state.filter=b.dataset.filter;renderDrawerContent();}
+    if(b.dataset.severity){state.severity=b.dataset.severity;renderDrawerContent();}
+  });
+  function toast(text){clearTimeout(toastTimer);$('#toast').textContent=text;$('#toast').hidden=false;toastTimer=setTimeout(()=>$('#toast').hidden=true,5000);}
+  async function fullscreen(){
+    try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else toast('Use a opção de tela cheia do navegador.');}
+    catch(_){toast('Tela cheia indisponível neste ambiente. Use F11 no navegador.');}
+  }
+  $('#fullscreen').onclick=fullscreen;
+  document.addEventListener('fullscreenchange',()=>{$('#fullscreen').setAttribute('aria-label',document.fullscreenElement?'Sair da tela cheia':'Ativar tela cheia');$('#fullscreen span').textContent=document.fullscreenElement?'SAIR DA TELA CHEIA':'TELA CHEIA';});
+  document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='f'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)&&!$('#drawer').open){e.preventDefault();void fullscreen();}});
+  function setPaused(value){state.paused=value;window.NocScene?.setPaused(value);$('#motionToggle').setAttribute('aria-pressed',String(value));$('#motionToggle').setAttribute('aria-label',value?'Retomar efeitos visuais':'Pausar efeitos visuais');$('#motionToggle').title=value?'Retomar efeitos visuais':'Pausar efeitos visuais';}
+  $('#motionToggle').onclick=()=>setPaused(!state.paused);
+  if(window.NocScene?.reducedMotion.matches)setPaused(true);
+  window.NocScene?.reducedMotion.addEventListener('change',e=>setPaused(e.matches));
+  function clock(){const now=new Date();$('#clock').textContent=now.toLocaleTimeString('pt-BR');$('#date').textContent=now.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();}
+  $('#refresh').onclick=load;
+  buildNodes();clock();setInterval(clock,1000);void load();
+  setInterval(()=>{if(!document.hidden)void load();},Math.max(10000,cfg.refreshMs||15000));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)void load();});
+})();
+
+</script>
+</body>
+</html>
+
